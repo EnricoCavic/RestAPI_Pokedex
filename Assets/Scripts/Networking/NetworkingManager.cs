@@ -21,23 +21,24 @@ public class NetworkingManager : MonoBehaviour
         pokemonInfo = new PokemonInfo();
         int rand = Random.Range(1, 808);
         var tasks = new Task[2];
-        tasks[0] = PkmnRequest(343);
-        tasks[1] = SpecieRequest(343);
+        tasks[0] = PkmnRequest(rand);
+        tasks[1] = SpecieRequest(rand);
 
         await Task.WhenAll(tasks);
 
-        onInformationArrived?.Invoke(pokemonInfo);
+        tasks = new Task[2];
+        tasks[0] = SpriteRequest();
+        tasks[1] = FieldGroupRequest();
 
+        await Task.WhenAll(tasks);   
+
+        onInformationArrived?.Invoke(pokemonInfo);
     }
 
     async Task PkmnRequest(int _index)
     {
         string dataURL = baseURL + pkmURL + _index.ToString();
         pokemonInfo.general = await JSONWebRequest(dataURL);  
-
-        string imgURL = pokemonInfo.frontDefaultURL;
-        pokemonInfo.frontDefaultTexture = await TextureWebRequest(imgURL);
-
     }
 
     async Task SpecieRequest(int _index)
@@ -47,8 +48,36 @@ public class NetworkingManager : MonoBehaviour
     }
 
 
+    async Task SpriteRequest()
+    {
+        string imgURL = pokemonInfo.frontDefaultURL;
+        pokemonInfo.frontDefaultTexture = await TextureWebRequest(imgURL);                
+    }
+
+    async Task FieldGroupRequest()
+    {
+        var jsonRequests = new Task<JSONNode>[2];
+
+        string fieldGroup1URL = pokemonInfo.field1URL;
+        Debug.Log(fieldGroup1URL);
+        jsonRequests[0] = JSONWebRequest(fieldGroup1URL);
+
+        string fieldGroup2URL = pokemonInfo.field2URL;
+        Debug.Log(fieldGroup2URL);
+        jsonRequests[1] = JSONWebRequest(fieldGroup2URL);
+
+        await Task.WhenAll(jsonRequests);
+        pokemonInfo.field1 = jsonRequests[0].Result;
+        pokemonInfo.field2 = jsonRequests[1].Result;
+
+    }
+
+
     async Task<JSONNode> JSONWebRequest(string dataURL)
     {
+        if(dataURL == null)
+            return null;
+
         UnityWebRequest request = UnityWebRequest.Get(dataURL);
         await WebRequest(request);
 
@@ -57,6 +86,9 @@ public class NetworkingManager : MonoBehaviour
 
     async Task<Texture> TextureWebRequest(string dataURL)
     {
+        if(dataURL == null)
+            return null;
+            
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(dataURL);
         await WebRequest(request);
 
@@ -84,6 +116,10 @@ public struct PokemonInfo
 {
     public JSONNode general;
     public JSONNode species;    
+    public JSONNode field1;
+    public JSONNode field2;
     public string frontDefaultURL => general["sprites"]["front_default"];
+    public string field1URL => species["egg_groups"][0]["url"];
+    public string field2URL => species["egg_groups"][1]["url"];
     public Texture frontDefaultTexture;
 }
