@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 using SimpleJSON;
 using System.Threading.Tasks;
 
-public class NetworkingManager : MonoBehaviour
+public class RequestSender : MonoBehaviour
 {
 
     protected async Task<JSONNode> JSONWebRequest(string dataURL)

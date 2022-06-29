@@ -333,6 +333,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -835,6 +836,25 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      types_rock: -6628024909380178795
+      types_steel: 2148626868973663675
+      types_ghost: -6421870034694684932
+      types_fire: 6251720984704801849
+      types_dragon: 2257069077880328268
+      types_ice: 8584646169400181624
+      types_fight: 927110299013964972
+      types_poison: -9189860666176763590
+      types_bug: -2703148232100091533
+      types_grass: 993982844769502447
+      types_dark: 7390084433167880231
+      types_psychic: -9056861321158161652
+      types_water: -1101242450626250390
+      types_fairy: -4385912922640522184
+      types_flying: 194702264733722263
+      types_ground: 1301128131285223249
+      types_electric: -2434792921766440589
+      types_normal: 7500031526728341673
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

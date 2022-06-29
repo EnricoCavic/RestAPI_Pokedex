@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using SimpleJSON;
 
-public class SummaryComponent : MonoBehaviour
+public class SummaryComponent : MonoBehaviour, IUIComponent
 {
     [Header("Text Objects")]
     [SerializeField] TMPController txtName;
@@ -33,7 +33,7 @@ public class SummaryComponent : MonoBehaviour
         BlankAllResourses();    
     }
 
-    private void Initialize()
+    public void Initialize()
     {
         txtList = new List<IUIResourse<string>>();
         txtList.Add(txtName);
@@ -62,7 +62,7 @@ public class SummaryComponent : MonoBehaviour
         
     }
 
-    public void UpdatePkmnUI(PokemonInfo _pokeInfo)
+    public void UpdateUI(PokemonInfo _pokeInfo)
     {
         txtName.UpdateResourse(_pokeInfo.generalNode["name"]);
         txtDexNumber.UpdateResourse(_pokeInfo.generalNode["id"]);
@@ -101,5 +101,4 @@ public class SummaryComponent : MonoBehaviour
 
 
     }
-
 }

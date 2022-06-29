@@ -1,13 +1,14 @@
 using UnityEngine;
 using SimpleJSON;
 
-public struct PokemonInfo
+public class PokemonInfo
 {
     public JSONNode generalNode;
     public JSONNode speciesNode;    
     public JSONNode field1Node;
     public JSONNode field2Node;
     public Texture frontDefaultTexture;
+    public Texture miniatureTexture;
     public string frontDefaultURL => generalNode["sprites"]["front_default"];
     public string field1URL => speciesNode["egg_groups"][0]["url"];
     public string field2URL => speciesNode["egg_groups"][1]["url"];

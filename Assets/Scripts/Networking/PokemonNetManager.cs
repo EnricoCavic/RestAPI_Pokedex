@@ -5,68 +5,65 @@ using UnityEngine.Events;
 using System.Threading.Tasks;
 using SimpleJSON;
 
-public class PokemonNetManager : NetworkingManager
+public class PokemonNetManager : MonoBehaviour
 {
 
     public string baseURL; 
     public string pkmURL;
     public string speciesURL;
 
-    PokemonInfo pokemonInfo;
     public UnityEvent<PokemonInfo> onInformationArrived;
 
-    public async void GetPokemon(int _index)
+    PokemonRequests rq;
+
+
+    private void Awake() 
     {
-        pokemonInfo = new PokemonInfo();
+        rq = GetComponent<PokemonRequests>();    
+    }
+
+    public async void GetPokemonInformation(int _index)
+    {
+        PokemonInfo pokemonInfo = new PokemonInfo();
         int rand = Random.Range(1, 808);
 
-        var tasks = new Task[2];
-        tasks[0] = PkmnRequest(rand);
-        tasks[1] = SpecieRequest(rand);
+        var jsonTask = new Task<JSONNode>[2];
+        jsonTask[0] = rq.PkmnRequest(baseURL + pkmURL + rand.ToString());
+        jsonTask[1] = rq.SpecieRequest(baseURL + speciesURL + rand.ToString());
 
-        await Task.WhenAll(tasks);
+        await Task.WhenAll(jsonTask);
+        pokemonInfo.generalNode = jsonTask[0].Result;
+        pokemonInfo.speciesNode = jsonTask[1].Result;
 
-        tasks = new Task[2];
-        tasks[0] = SpriteRequest();
-        tasks[1] = FieldGroupRequest();
+        var tasks = new Task<Information>[2];
+        tasks[0] = rq.SpriteRequest(pokemonInfo.frontDefaultURL);
+        tasks[1] = rq.FieldGroupRequest(pokemonInfo.field1URL, pokemonInfo.field2URL);
 
         await Task.WhenAll(tasks);   
+        
+        pokemonInfo.frontDefaultTexture = tasks[0].Result.texture;
+
+        pokemonInfo.field1Node = tasks[1].Result.fieldsArray[0];
+        pokemonInfo.field2Node = tasks[1].Result.fieldsArray[1];
+
 
         onInformationArrived?.Invoke(pokemonInfo);
+
     }
 
-    async Task PkmnRequest(int _index)
+    public async void GetPokemonMiniature(int _index)
     {
-        string dataURL = baseURL + pkmURL + _index.ToString();
-        pokemonInfo.generalNode = await JSONWebRequest(dataURL);  
-    }
-
-    async Task SpecieRequest(int _index)
-    {
-        string dataURL = baseURL + speciesURL + _index.ToString();
-        pokemonInfo.speciesNode = await JSONWebRequest(dataURL);
+        PokemonInfo pokemonInfo = new PokemonInfo();
+        await rq.PkmnRequest(baseURL + pkmURL + _index.ToString());
     }
 
 
-    async Task SpriteRequest()
-    {
-        string imgURL = pokemonInfo.frontDefaultURL;
-        pokemonInfo.frontDefaultTexture = await TextureWebRequest(imgURL);                
-    }
 
-    async Task FieldGroupRequest()
-    {
-        var jsonRequests = new Task<JSONNode>[2];
 
-        string fieldGroup1URL = pokemonInfo.field1URL;
-        jsonRequests[0] = JSONWebRequest(fieldGroup1URL);
+}
 
-        string fieldGroup2URL = pokemonInfo.field2URL;
-        jsonRequests[1] = JSONWebRequest(fieldGroup2URL);
-
-        await Task.WhenAll(jsonRequests);
-        pokemonInfo.field1Node = jsonRequests[0].Result;
-        pokemonInfo.field2Node = jsonRequests[1].Result;
-
-    }
+public class Information
+{
+    public Texture texture;
+    public JSONNode[] fieldsArray;
 }
