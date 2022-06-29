@@ -11,7 +11,7 @@ public class NetworkingManager : MonoBehaviour
 
     public string baseURL; 
     public string pkmURL;
-    public string speciesURL;
+    public string speciesNodeURL;
 
     PokemonInfo pokemonInfo;
     public UnityEvent<PokemonInfo> onInformationArrived;
@@ -38,13 +38,13 @@ public class NetworkingManager : MonoBehaviour
     async Task PkmnRequest(int _index)
     {
         string dataURL = baseURL + pkmURL + _index.ToString();
-        pokemonInfo.general = await JSONWebRequest(dataURL);  
+        pokemonInfo.generalNode = await JSONWebRequest(dataURL);  
     }
 
     async Task SpecieRequest(int _index)
     {
-        string dataURL = baseURL + speciesURL + _index.ToString();
-        pokemonInfo.species = await JSONWebRequest(dataURL);
+        string dataURL = baseURL + speciesNodeURL + _index.ToString();
+        pokemonInfo.speciesNode = await JSONWebRequest(dataURL);
     }
 
 
@@ -59,16 +59,14 @@ public class NetworkingManager : MonoBehaviour
         var jsonRequests = new Task<JSONNode>[2];
 
         string fieldGroup1URL = pokemonInfo.field1URL;
-        Debug.Log(fieldGroup1URL);
         jsonRequests[0] = JSONWebRequest(fieldGroup1URL);
 
         string fieldGroup2URL = pokemonInfo.field2URL;
-        Debug.Log(fieldGroup2URL);
         jsonRequests[1] = JSONWebRequest(fieldGroup2URL);
 
         await Task.WhenAll(jsonRequests);
-        pokemonInfo.field1 = jsonRequests[0].Result;
-        pokemonInfo.field2 = jsonRequests[1].Result;
+        pokemonInfo.field1Node = jsonRequests[0].Result;
+        pokemonInfo.field2Node = jsonRequests[1].Result;
 
     }
 
@@ -88,7 +86,7 @@ public class NetworkingManager : MonoBehaviour
     {
         if(dataURL == null)
             return null;
-            
+
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(dataURL);
         await WebRequest(request);
 
@@ -114,12 +112,35 @@ public class NetworkingManager : MonoBehaviour
 
 public struct PokemonInfo
 {
-    public JSONNode general;
-    public JSONNode species;    
-    public JSONNode field1;
-    public JSONNode field2;
-    public string frontDefaultURL => general["sprites"]["front_default"];
-    public string field1URL => species["egg_groups"][0]["url"];
-    public string field2URL => species["egg_groups"][1]["url"];
+    public JSONNode generalNode;
+    public JSONNode speciesNode;    
+    public JSONNode field1Node;
+    public JSONNode field2Node;
     public Texture frontDefaultTexture;
+    public string frontDefaultURL => generalNode["sprites"]["front_default"];
+    public string field1URL => speciesNode["egg_groups"][0]["url"];
+    public string field2URL => speciesNode["egg_groups"][1]["url"];
+
+    public string genus => speciesNode["genera"][7]["genus"];
+    public string latestEnFlavorText => FindLastestEnFlavorText(speciesNode["flavor_text_entries"]);
+    public string field1Name => field1Node["names"][6]["name"];
+    public string field2Name => field2Node["names"][6]["name"];
+    public string GetTypeName(int i) => generalNode["types"][i]["type"]["name"];
+    public int GetStatEffort(int i) => generalNode["stats"][i]["effort"];
+    public string GetStatName(int i) => generalNode["stats"][i]["stat"]["name"];
+
+    string FindLastestEnFlavorText(JSONNode _flavorTexts)
+    {
+        for (int i = _flavorTexts.Count; i > 0; i--)
+        {
+            if(_flavorTexts[i]["language"]["name"] == "en")
+            {
+                string txt = _flavorTexts[i]["flavor_text"];
+                txt = txt.Replace("\n", " ");
+                return txt;           
+            }
+        }      
+
+        return "";  
+    }
 }

@@ -64,45 +64,42 @@ public class SummaryComponent : MonoBehaviour
 
     public void UpdatePkmnUI(PokemonInfo _pokeInfo)
     {
-        txtName.UpdateResourse(_pokeInfo.general["name"]);
-        txtDexNumber.UpdateResourse(_pokeInfo.general["id"]);
+        txtName.UpdateResourse(_pokeInfo.generalNode["name"]);
+        txtDexNumber.UpdateResourse(_pokeInfo.generalNode["id"]);
         imgPokemon.UpdateResourse(_pokeInfo.frontDefaultTexture);
 
-        txtTitle.UpdateResourse(_pokeInfo.species["genera"][7]["genus"]);
+        txtTitle.UpdateResourse(_pokeInfo.genus);
 
-        txtDescription.UpdateResourse(FindLastestEnFlavorText(_pokeInfo.species["flavor_text_entries"])); 
+        txtDescription.UpdateResourse(_pokeInfo.latestEnFlavorText); 
 
         for (int i = 0; i < imgTypes.Count; i++)
         {
-            string typeName = _pokeInfo.general["types"][i]["type"]["name"];
+            string typeName = _pokeInfo.GetTypeName(i);
             if(typeName == null)
                 break;
             imgTypes[i].UpdateResourse(typeDictionary[typeName]);
         }
 
-        string eggGroups = "";
-        eggGroups += "\n" + _pokeInfo.field1["names"][6]["name"];
-        if(_pokeInfo.field2 != null)
-            eggGroups += "\n" + _pokeInfo.field2["names"][6]["name"];
+        string eggGroups = "\n";
+        eggGroups += "\n" + _pokeInfo.field1Name;
+        if(_pokeInfo.field2Node != null)
+            eggGroups += "\n" + _pokeInfo.field2Name;
 
         txtEggGroup.UpdateResourse(eggGroups);
 
-
-    }
-
-    string FindLastestEnFlavorText(JSONNode _flavorTexts)
-    {
-        for (int i = _flavorTexts.Count; i > 0; i--)
+        string evYield = "\n";
+        for (int i = 0; i < 6; i++)
         {
-            if(_flavorTexts[i]["language"]["name"] == "en")
+            if(_pokeInfo.GetStatEffort(i) > 0)
             {
-                string txt = _flavorTexts[i]["flavor_text"];
-                txt = txt.Replace("\n", " ");
-                return txt;           
+                string statName = _pokeInfo.GetStatName(i);
+                statName = statName.Substring(0,1).ToUpper() + statName.Substring(1);
+                evYield += "\n+" + _pokeInfo.GetStatEffort(i).ToString() + " " + statName;
             }
-        }      
+        }
+        txtEVYield.UpdateResourse(evYield);
 
-        return "";  
+
     }
 
 }
