@@ -354,18 +354,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1365246886}
-        m_TargetAssemblyTypeName: NetworkingManager, Assembly-CSharp
-        m_MethodName: GetPokemon
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 468
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1070627057}
         m_TargetAssemblyTypeName: SummaryComponent, Assembly-CSharp
         m_MethodName: BlankAllResourses
@@ -374,6 +362,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1365246886}
+        m_TargetAssemblyTypeName: PokemonNetManager, Assembly-CSharp
+        m_MethodName: GetPokemon
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -1597,12 +1597,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1365246885}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe719b07fa877a84e9b51cc9e2302b25, type: 3}
+  m_Script: {fileID: 11500000, guid: 8ecbb8d3b09271f47a7d2d4e20baf2c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   baseURL: https://pokeapi.co/api/v2/
   pkmURL: pokemon/
-  speciesNodeURL: pokemon-species/
+  speciesURL: pokemon-species/
   onInformationArrived:
     m_PersistentCalls:
       m_Calls:
