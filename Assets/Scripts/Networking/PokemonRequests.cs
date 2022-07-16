@@ -6,41 +6,27 @@ using SimpleJSON;
 
 public class PokemonRequests : RequestSender
 {
-    public async Task<JSONNode> PkmnRequest(string dataURL)
+
+    public async Task SpriteRequest(PokemonInfo _info)
     {
-        return await JSONWebRequest(dataURL);  
+        _info.frontDefaultTexture = await TextureWebRequest(_info.frontDefaultURL);        
     }
 
-    public async Task<JSONNode> SpecieRequest(string dataURL)
+    public async Task MiniatureRequest(PokemonInfo _info)
     {
-        return await JSONWebRequest(dataURL);
+        _info.miniatureTexture = await TextureWebRequest(_info.miniatureURL);        
     }
 
-
-    public async Task<Information> SpriteRequest(string imgURL)
-    {
-        Information inf = new Information();
-        inf.texture = await TextureWebRequest(imgURL);
-        return inf;              
-    }
-
-    public async Task<Information> FieldGroupRequest(string fieldGroup1URL, string fieldGroup2URL)
+    public async Task FieldGroupRequest(PokemonInfo _info)
     {
         var jsonRequests = new Task<JSONNode>[2];
 
-        jsonRequests[0] = JSONWebRequest(fieldGroup1URL);
-        jsonRequests[1] = JSONWebRequest(fieldGroup2URL);
+        jsonRequests[0] = JSONWebRequest(_info.field1URL);
+        jsonRequests[1] = JSONWebRequest(_info.field2URL);
 
         await Task.WhenAll(jsonRequests);
-        JSONNode[] fieldsArray = new JSONNode[2];
-        fieldsArray[0] = jsonRequests[0].Result;
-        fieldsArray[1] = jsonRequests[1].Result;
 
-        Information inf = new Information();
-        inf.fieldsArray = new JSONNode[2];
-        inf.fieldsArray[0] = fieldsArray[0];
-        inf.fieldsArray[1] = fieldsArray[1];
-        return inf;
-
+        _info.field1Node = jsonRequests[0].Result;
+        _info.field2Node = jsonRequests[1].Result;
     }
 }

@@ -13,6 +13,7 @@ public class PokemonNetManager : MonoBehaviour
     public string speciesURL;
 
     public UnityEvent<PokemonInfo> onInformationArrived;
+    public UnityEvent<PokemonInfo> onMiniatureArrived;
 
     PokemonRequests rq;
 
@@ -28,33 +29,29 @@ public class PokemonNetManager : MonoBehaviour
         int rand = Random.Range(1, 808);
 
         var jsonTask = new Task<JSONNode>[2];
-        jsonTask[0] = rq.PkmnRequest(baseURL + pkmURL + rand.ToString());
-        jsonTask[1] = rq.SpecieRequest(baseURL + speciesURL + rand.ToString());
+        jsonTask[0] = rq.JSONWebRequest(baseURL + pkmURL + rand.ToString());
+        jsonTask[1] = rq.JSONWebRequest(baseURL + speciesURL + rand.ToString());
 
         await Task.WhenAll(jsonTask);
         pokemonInfo.generalNode = jsonTask[0].Result;
         pokemonInfo.speciesNode = jsonTask[1].Result;
 
-        var tasks = new Task<Information>[2];
-        tasks[0] = rq.SpriteRequest(pokemonInfo.frontDefaultURL);
-        tasks[1] = rq.FieldGroupRequest(pokemonInfo.field1URL, pokemonInfo.field2URL);
+        var tasks = new Task[2];
+        tasks[0] = rq.SpriteRequest(pokemonInfo);
+        tasks[1] = rq.FieldGroupRequest(pokemonInfo);
 
-        await Task.WhenAll(tasks);   
-        
-        pokemonInfo.frontDefaultTexture = tasks[0].Result.texture;
-
-        pokemonInfo.field1Node = tasks[1].Result.fieldsArray[0];
-        pokemonInfo.field2Node = tasks[1].Result.fieldsArray[1];
-
+        await Task.WhenAll(tasks);          
 
         onInformationArrived?.Invoke(pokemonInfo);
-
     }
 
     public async void GetPokemonMiniature(int _index)
     {
         PokemonInfo pokemonInfo = new PokemonInfo();
-        await rq.PkmnRequest(baseURL + pkmURL + _index.ToString());
+        pokemonInfo.generalNode = await rq.JSONWebRequest(baseURL + pkmURL + _index.ToString());
+
+
+        onMiniatureArrived?.Invoke(pokemonInfo);
     }
 
 
@@ -62,7 +59,7 @@ public class PokemonNetManager : MonoBehaviour
 
 }
 
-public class Information
+public struct Information
 {
     public Texture texture;
     public JSONNode[] fieldsArray;

@@ -7,6 +7,11 @@ public class DexObjectComponent : MonoBehaviour, IUIComponent
     [SerializeField] TMPController txtNumber;
     [SerializeField] ImgController imgMiniature;
 
+    public void SetNumber(int num)
+    {
+        txtNumber.UpdateResourse(num.ToString());
+    }
+
     public void BlankAllResourses()
     {
         txtNumber.BlankResourse();

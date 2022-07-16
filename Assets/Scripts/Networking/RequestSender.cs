@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 public class RequestSender : MonoBehaviour
 {
 
-    protected async Task<JSONNode> JSONWebRequest(string dataURL)
+    public async Task<JSONNode> JSONWebRequest(string dataURL)
     {
         if(dataURL == null)
             return null;
@@ -20,7 +20,7 @@ public class RequestSender : MonoBehaviour
         return JSON.Parse(request.downloadHandler.text);            
     }
 
-    protected async Task<Texture> TextureWebRequest(string dataURL)
+    public async Task<Texture> TextureWebRequest(string dataURL)
     {
         if(dataURL == null)
             return null;
@@ -33,7 +33,7 @@ public class RequestSender : MonoBehaviour
         return t;
     }
 
-    protected async Task WebRequest(UnityWebRequest request)   
+    public async Task WebRequest(UnityWebRequest request)   
     {
         request.SendWebRequest();
 
